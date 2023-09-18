@@ -11,8 +11,10 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         try {
             //Connect to the rmiregistry that is running on localhost
-            Registry registry = LocateRegistry.getRegistry("localhost");
-
+            String host = args[0];
+            System.out.println(host);
+//            Registry registry = LocateRegistry.getRegistry("localhost");
+            Registry registry = LocateRegistry.getRegistry(host);
 
             IRemoteGame remoteGame = (IRemoteGame) registry.lookup("TicTacToe");
             //Call methods on the remote object as if it was a local object
@@ -35,71 +37,78 @@ public class App {
                 }
             }
 
-            // check if there is a match, if not, create a match
             int matchId = remoteGame.hasMatch(name);
-            while (!remoteGame.matchReady(matchId)) {
-                System.out.println("Waiting for another player");
-                Thread.sleep(5000);
-            }
-
-//            int matchStatus = 0;
-//            while (matchId == 0) {
-//                matchId = remoteGame.hasMatch(name);
-//                if (matchId != 0 ) {
-//                    System.out.println("You have joined the match");
-//                    matchStatus = remoteGame.joinMatch(name, matchId);
-//                    break;
-//                }
-//                else if (matchId == 0) {
-//                    System.out.println("Waiting for another player");
-//                }
-//                else {
-//                    System.out.println("error");
-//                }
-//                Thread.sleep(5000);
-//            }
-
-            String winner = remoteGame.getWinner(matchId);
-            while (winner.equals("No winner")) {
-//                System.out.println("game is running");
-                winner = remoteGame.getWinner(matchId);
-                if (!winner.equals("No winner")) {
-                    continue;
+            while (true) {
+                while (!remoteGame.matchReady(matchId)) {
+                    System.out.println("Waiting for another player");
+                    Thread.sleep(5000);
                 }
 
-                if (remoteGame.isMyTurn(name)) {
-                    char[][] board = remoteGame.getBoard(name);
-                    for (int i = 0; i < 3; i++) {
-                        System.out.println(board[i]);
-                    }
-                    int moveStatus = 0;
-                    System.out.println("your turn");
-                    while (moveStatus != 1) {
-                        System.out.print("Enter X: ");
-                        int x = scanner.nextInt();
-                        System.out.print("Enter Y: ");
-                        int y = scanner.nextInt();
-                        moveStatus = remoteGame.move(name, x, y);
-                        if (moveStatus == -1) {
-                            System.out.println("Invalid move");
+                String opponent = remoteGame.getOpponent(name);
+                System.out.println("Your opponent is " + opponent);
+                System.out.println("Match id: " + matchId);
+                String winner = remoteGame.getWinner(matchId, name);
+                while (winner.equals("No winner")) {
+
+                    if (remoteGame.isMyTurn(name)) {
+                        char[][] board = remoteGame.getBoard(name);
+                        for (int i = 0; i < 3; i++) {
+                            System.out.println(board[i]);
+                        }
+
+                        winner = remoteGame.getWinner(matchId, name);
+                        if (!winner.equals("No winner")) {
+                            continue;
+                        }
+
+                        int moveStatus = 0;
+                        System.out.println("your turn");
+                        while (moveStatus != 1) {
+                            System.out.print("Enter X: ");
+                            int x = scanner.nextInt();
+                            System.out.print("Enter Y: ");
+                            int y = scanner.nextInt();
+                            moveStatus = remoteGame.move(name, x, y);
+                            if (moveStatus == -1) {
+                                System.out.println("Invalid move");
+                            }
+                        }
+
+                        System.out.println("move made, waiting for other player moving");
+                        board = remoteGame.getBoard(name);
+                        for (int i = 0; i < 3; i++) {
+                            System.out.println(board[i]);
                         }
                     }
+                    winner = remoteGame.getWinner(matchId, name);
+//                    if (!winner.equals("No winner")) {
+//                        continue;
+//                    }
 
-                    System.out.println("move made, waiting for other player moving");
-                    board = remoteGame.getBoard(name);
-                    for (int i = 0; i < 3; i++) {
-                        System.out.println(board[i]);
-                    }
+
+                }
+
+                if (winner.equals("Draw")) {
+                    System.out.println("It is a Draw match");
+                }
+                else {
+                    System.out.println("Winner is " + winner);
+                }
+
+
+                scanner.nextLine();
+                System.out.print("Do you want to play again? (y/n): ");
+                String playAgain = scanner.nextLine();
+                if (playAgain.equals("y")) {
+                    matchId = remoteGame.hasMatch(name);
+                } else {
+                    System.out.println(playAgain);
+                    break;
                 }
 
             }
+            // check if there is a match, if not, create a match
 
-            if (winner.equals("Draw")) {
-                System.out.println("It is a Draw match");
-            }
-            else {
-                System.out.println("Winner is " + winner);
-            }
 
 
 

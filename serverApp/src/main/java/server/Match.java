@@ -9,12 +9,43 @@ public class Match {
     Player currentPlayer;
     boolean ready;
     char[][] board;
+    boolean player1Finished;
+    boolean player2Finished;
 
     public Match(Player player1) {
         this.player1 = player1;
         this.ready = false;
         this.id = new Random().nextInt(1000)+1;
+        this.player1Finished = false;
+        this.player2Finished = false;
     }
+
+    public void finishPlayer(String name) {
+        if (this.player1.getName().equals(name)) {
+            this.player1Finished = true;
+        }
+        else {
+            this.player2Finished = true;
+        }
+    }
+
+    public Player getPlayer1() {
+        return this.player1;
+    }
+
+    public Player getPlayer2() {
+        return this.player2;
+    }
+    public boolean isFinished() {
+        if (this.player1Finished && this.player2Finished) {
+            return true;
+        }
+        return false;
+    }
+
+//    public void setFinished(boolean finished) {
+//        this.finished = finished;
+//    }
 
     public boolean isReady() {
         return this.ready;
@@ -82,7 +113,7 @@ public class Match {
         }
     }
 
-    public String getWinner() {
+    public String getWinner(String name) {
         char[][] board = this.board;
         char winner = ' ';
         for (int i = 0; i < 3; i++) {
@@ -112,17 +143,28 @@ public class Match {
             return "No winner";
         }
         else if (winner==' ' && isBoardFull(board)) {
+            finishPlayer(name);
             return "Draw";
         }
         else if (winner == 'X') {
+            finishPlayer(name);
             return this.player1.getName();
         }
         else if (winner == 'O'){
+            finishPlayer(name);
             return this.player2.getName();
         }
         return "No winner";
     }
 
+    public String getOpponent(Player player) {
+        if (this.player1 == player) {
+            return this.player2.getName();
+        }
+        else {
+            return this.player1.getName();
+        }
+    }
     private boolean isBoardFull(char[][] board) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -133,4 +175,6 @@ public class Match {
         }
         return true; // All cells are filled
     }
+
+
 }

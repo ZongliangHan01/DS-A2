@@ -100,21 +100,31 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
     public int hasMatch(String name) throws RemoteException {
         Player player = getPlayerByName(name);
         for (Match match : this.matches) {
+
             if (match.waitingForPlayer() && !match.playerInMatch(player)) {
                 match.joinMatch(player);
                 player.setMatch(match);
                 match.setReady(true);
+                for (Match m : this.matches) {
+                    System.out.println("match id: " + m.getId() + " Player 1: " + m.getPlayer1().getName() + " Player 2: " + m.getPlayer2().getName());
+                }
+                System.out.println("***********************************");
                 return match.getId();
             }
         }
         Match newMatch = new Match(player);
         this.matches.add(newMatch);
         player.setMatch(newMatch);
+        for (Match match : this.matches) {
+            System.out.println("match id: " + match.getId() + " Player 1: " + match.getPlayer1().getName());
+        }
+        System.out.println("***********************************");
         return newMatch.getId();
     }
 
     @Override
     public boolean matchReady(int matchId) throws RemoteException {
+//        System.out.println("Waiting for another player");
         Match match = getMatchById(matchId);
         if (match == null) {
             return false;
@@ -138,9 +148,22 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
     }
 
 
-    public String getWinner(int matchId) throws RemoteException {
+    public String getWinner(int matchId, String name) throws RemoteException {
         Match match = getMatchById(matchId);
-        return match.getWinner();
+        return match.getWinner(name);
+    }
+
+    @Override
+    public String getOpponent(String name) throws RemoteException {
+        Player player = getPlayerByName(name);
+        if (player == null) {
+            return null;
+        }
+        Match match = player.getMatch();
+        if (match == null) {
+            return null;
+        }
+        return match.getOpponent(player);
     }
 
     @Override
@@ -148,4 +171,16 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
         return false;
     }
 
+    public void cleanUp() throws InterruptedException {
+        while (true) {
+            for (Match match : this.matches) {
+                if (match.isFinished()) {
+                    System.out.println("Match " + match.getId() + " is finished");
+                    this.matches.remove(match);
+                }
+            }
+            Thread.sleep(2000);
+        }
+
+    }
 }

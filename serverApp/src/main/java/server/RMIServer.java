@@ -33,7 +33,7 @@ public class RMIServer {
             registry.bind("TicTacToe", remoteGame);
 
             System.out.println("TicTacToe Server ready");
-
+            ((RemoteGame) remoteGame).cleanUp();
             //The server will continue running as long as there are remote objects exported into
             //the RMI runtime, to re	move remote objects from the
             //RMI runtime so that they can no longer accept RMI calls you can use:

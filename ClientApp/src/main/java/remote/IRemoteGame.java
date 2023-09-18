@@ -15,7 +15,7 @@ public interface IRemoteGame extends Remote {
 
     public int addPlayer(String name) throws RemoteException;
 
-    public String getWinner(int matchId) throws RemoteException;
+    public String getWinner(int matchId, String name) throws RemoteException;
 
     public String getWinner() throws RemoteException;
 
@@ -26,7 +26,7 @@ public interface IRemoteGame extends Remote {
     public boolean matchReady(int matchId) throws RemoteException;
     // get the name of winner
 //    public String getWinner() throws RemoteException;
-
+    public String getOpponent(String name) throws RemoteException;
 
 
 }

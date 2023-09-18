@@ -1,0 +1,3 @@
+src/main/java/client/App.class
+src/main/java/remote/IRemoteGame.class
+src/main/java/remote/IRemoteMath.class
