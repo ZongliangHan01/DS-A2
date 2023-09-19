@@ -5,6 +5,7 @@ import src.main.java.remote.IRemoteGame;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
     private ArrayList<Player> players;
@@ -171,16 +172,30 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
         return false;
     }
 
-    public void cleanUp() throws InterruptedException {
-        while (true) {
-            for (Match match : this.matches) {
-                if (match.isFinished()) {
-                    System.out.println("Match " + match.getId() + " is finished");
-                    this.matches.remove(match);
-                }
+//    public void cleanUp() throws InterruptedException {
+//        while (true) {
+//            for (Match match : this.matches) {
+//                if (match.isFinished()) {
+//                    System.out.println("Match " + match.getId() + " is finished");
+//                    this.matches.remove(match);
+//                }
+//            }
+//            Thread.sleep(2000);
+//        }
+//
+//    }
+public void cleanUp() throws InterruptedException {
+    while (true) {
+        Iterator<Match> iterator = this.matches.iterator();
+        while (iterator.hasNext()) {
+            Match match = iterator.next();
+            if (match.isFinished()) {
+                System.out.println("Match " + match.getId() + " is finished");
+                iterator.remove(); // Safely remove the match using the iterator
             }
-            Thread.sleep(2000);
         }
-
+        Thread.sleep(2000);
     }
+}
+
 }
