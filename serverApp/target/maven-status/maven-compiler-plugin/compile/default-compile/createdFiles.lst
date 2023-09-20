@@ -1,5 +1,0 @@
-src/main/java/server/Player.class
-src/main/java/server/Match.class
-src/main/java/server/RMIServer.class
-src/main/java/remote/IRemoteGame.class
-src/main/java/server/RemoteGame.class

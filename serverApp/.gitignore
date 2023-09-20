@@ -1,2 +1,2 @@
-serverApp/out/
-serverApp/.idea/
+target/
+.idea/

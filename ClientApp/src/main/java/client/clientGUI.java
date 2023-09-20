@@ -1,4 +1,4 @@
-package src.main.java.client;
+package client;
 
 import src.main.java.remote.IRemoteGame;
 

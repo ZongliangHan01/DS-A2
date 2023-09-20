@@ -1,4 +1,4 @@
-package src.main.java.client;
+package client;
 
 import javax.swing.*;
 import java.awt.*;
