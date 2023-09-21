@@ -19,7 +19,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>src.main.java.client.App</mainClass> <!-- Replace with your main class -->
+                            <mainClass>client.ClientGUI</mainClass> <!-- Replace with your main class -->
                         </manifest>
                     </archive>
                 </configuration>

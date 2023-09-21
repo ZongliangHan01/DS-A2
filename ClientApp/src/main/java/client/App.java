@@ -4,14 +4,14 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import src.main.java.remote.IRemoteGame;
-import src.main.java.remote.IRemoteMath;
+
 public class App {
     String playerName;
-    int matchId;
+    int matchId = -1;
     String opponent;
     IRemoteGame remoteGame;
     public App() throws NotBoundException, RemoteException, InterruptedException {
@@ -35,6 +35,13 @@ public class App {
         return this.matchId;
     }
 
+    public void setMatchId(int matchId) {
+        this.matchId = matchId;
+    }
+
+    public boolean matchFinished() throws RemoteException {
+        return this.remoteGame.matchFinished(this.matchId);
+    }
     public String getOpponent() {
         return this.opponent;
     }
@@ -71,33 +78,33 @@ public class App {
         this.playerName = name;
     }
 
-    public int hasMatch(String name) throws RemoteException {
-        int matchId = this.remoteGame.hasMatch(name);
+    public int hasMatch() throws RemoteException {
+        int matchId = this.remoteGame.hasMatch(playerName);
+        this.matchId = matchId;
         return matchId;
     }
-    public String joinMatch(String name, int matchId) throws RemoteException, InterruptedException {
-        /// this will always create new match
-        if (!this.remoteGame.matchReady(matchId)) {
+    public String joinMatch() throws RemoteException, InterruptedException {
+        if (!this.remoteGame.matchReady(this.matchId)) {
             System.out.println("Waiting for another player");
             Thread.sleep(5000);
             return null;
         }
 
-        String opponent = this.remoteGame.getOpponent(name);
+        String opponent = this.remoteGame.getOpponent(playerName);
         System.out.println("Your opponent is " + opponent);
-        System.out.println("Match id: " + matchId);
-        this.matchId = matchId;
+        System.out.println("Match id: " + this.matchId);
+//        this.matchId = matchId;
         this.opponent = opponent;
         return opponent;
     }
 
-    public String getWinner(String name, int matchId) throws RemoteException {
-        return this.remoteGame.getWinner(matchId, name);
+    public String getWinner() throws RemoteException {
+        return this.remoteGame.getWinner(this.matchId, playerName);
     }
 
-    public int makeMove(String name, int x, int y) throws RemoteException {
-        if (this.remoteGame.isMyTurn(name)) {
-            char[][] board = this.remoteGame.getBoard(name);
+    public int makeMove(int x, int y) throws RemoteException {
+        if (this.remoteGame.isMyTurn(playerName)) {
+            char[][] board = this.remoteGame.getBoard(playerName);
             for (int i = 0; i < 3; i++) {
                 System.out.println(board[i]);
             }
@@ -105,14 +112,14 @@ public class App {
 //            int moveStatus = 0;
             System.out.println("your turn");
 
-            int moveStatus = this.remoteGame.move(name, x, y);
+            int moveStatus = this.remoteGame.move(playerName, x, y);
             if (moveStatus == -1) {
                 System.out.println("Invalid move");
                 return moveStatus;
             }
 
             System.out.println("move made, waiting for other player moving");
-            board = this.remoteGame.getBoard(name);
+            board = this.remoteGame.getBoard(playerName);
             for (int i = 0; i < 3; i++) {
                 System.out.println(board[i]);
             }
@@ -122,10 +129,17 @@ public class App {
     }
             // get x, y from GUI here
 
-    char[][] getBoard(String name) throws RemoteException {
-        return this.remoteGame.getBoard(name);
+    public char[][] getBoard() throws RemoteException {
+        return this.remoteGame.getBoard(playerName);
     }
 
+    public void sendMessages( String message) throws RemoteException {
+        this.remoteGame.sendMessages(matchId, message);
+    }
+
+    public ArrayList<String> getMessages() throws RemoteException {
+        return this.remoteGame.getMessages(matchId, playerName);
+    }
 //    public static void main(String[] args) {
 //        Scanner scanner = new Scanner(System.in);
 //        try {

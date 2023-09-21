@@ -14,47 +14,64 @@ public class GamePanel extends JPanel  implements ActionListener {
 
     JPanel title_panel = new JPanel();
     JPanel button_panel = new JPanel();
-    JLabel textfield = new JLabel();
+    JTextArea textfield = new JTextArea();
     JButton playAgainBtn = new JButton("Play Again");
     JButton[] buttons = new JButton[9];
     App client;
-    public GamePanel() throws NotBoundException, RemoteException, InterruptedException {
+    public GamePanel(App client, JPanel chatPanel) throws NotBoundException, RemoteException, InterruptedException {
+        setSize(600,1000);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
         textfield.setBackground(new Color(25,25,25));
         textfield.setForeground(new Color(25,255,0));
-        textfield.setFont(new Font("Ink Free",Font.BOLD,75));
-        textfield.setHorizontalAlignment(JLabel.CENTER);
+        textfield.setFont(new Font("Ink Free",Font.BOLD,25));
+//        textfield.setHorizontalAlignment(JLabel.CENTER);
         textfield.setText("Tic-Tac-Toe");
         textfield.setOpaque(true);
-
-        title_panel.setLayout(new BorderLayout());
-        title_panel.setBounds(0,0,800,100);
-        title_panel.add(textfield);
+        textfield.setLineWrap(true); // Enable text wrapping
+        textfield.setWrapStyleWord(true);
+        textfield.setEditable(false);
+        textfield.setPreferredSize(new Dimension(600, 100));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        add(textfield);
+//        title_panel.setLayout(new BorderLayout());
+//        title_panel.setBounds(0,0,500,100);
+//        title_panel.add(textfield);
 
         button_panel.setLayout(new GridLayout(3,3));
         button_panel.setBackground(new Color(150,150,150));
+        button_panel.setPreferredSize(new Dimension(600, 600));
 
         for(int i=0;i<9;i++) {
             buttons[i] = new JButton();
             button_panel.add(buttons[i]);
             buttons[i].setFont(new Font("MV Boli",Font.BOLD,120));
             buttons[i].setFocusable(false);
+            buttons[i].setSize(200,200);
             int row = i / 3;
             int col = i % 3;
             buttons[i].putClientProperty("value", new int[]{row, col});
             buttons[i].addActionListener(this);
         }
-        add(title_panel, BorderLayout.NORTH);
-        add(button_panel, BorderLayout.SOUTH);
+
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        add(button_panel, gbc);
 
         playAgainBtn.setEnabled(false);
         playAgainBtn.setVisible(false);
-        add(playAgainBtn);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        add(playAgainBtn, gbc);
         playAgainBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     reset();
                     initGame();
+//                    chatPanel.startChat();
                 } catch (NotBoundException ex) {
                     throw new RuntimeException(ex);
                 } catch (RemoteException ex) {
@@ -72,7 +89,7 @@ public class GamePanel extends JPanel  implements ActionListener {
             public void run() {
                 // Call your method here
                 try {
-                    App client = new App();
+//                    App client = new App();
                     GamePanel.this.client = client;
                     initGame();
 
@@ -93,7 +110,7 @@ public class GamePanel extends JPanel  implements ActionListener {
     public void initGame() throws NotBoundException, RemoteException, InterruptedException {
 //        App client = new App();
 //        this.client = client;
-        int matchId = this.client.hasMatch(client.getPlayerName());
+        int matchId = this.client.hasMatch();
         textfield.setText("Waiting for another player...");
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -101,7 +118,7 @@ public class GamePanel extends JPanel  implements ActionListener {
 
                 String opponent = null;
                 try {
-                    opponent = client.joinMatch(client.getPlayerName(), matchId);
+                    opponent = client.joinMatch();
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 } catch (InterruptedException e) {
@@ -109,7 +126,7 @@ public class GamePanel extends JPanel  implements ActionListener {
                 }
                 while (opponent == null) {
                     try {
-                        opponent = client.joinMatch(client.getPlayerName(), matchId);
+                        opponent = client.joinMatch();
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     } catch (InterruptedException e) {
@@ -121,7 +138,7 @@ public class GamePanel extends JPanel  implements ActionListener {
                 textfield.setText("Match ID: " + matchId + " Opponent: " + opponent);
                 String winner = null;
                 try {
-                    winner = client.getWinner(client.getPlayerName(), client.getMatchId());
+                    winner = client.getWinner();
 
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
@@ -131,16 +148,19 @@ public class GamePanel extends JPanel  implements ActionListener {
                 while (winner.equals("No winner")) {
 
                     try {
-                        board = client.getBoard(client.getPlayerName());
+                        Thread.sleep(500);
+                        board = client.getBoard();
                         printBoard(board);
-                        winner = client.getWinner(client.getPlayerName(), client.getMatchId());
+                        winner = client.getWinner();
 
                     } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 }
                 try {
-                    board = client.getBoard(client.getPlayerName());
+                    board = client.getBoard();
                     printBoard(board);
                     for(int i=0;i<9;i++) {
                         buttons[i].setEnabled(false);
@@ -148,6 +168,7 @@ public class GamePanel extends JPanel  implements ActionListener {
                     textfield.setText("Winner: " + winner);
                     playAgainBtn.setEnabled(true);
                     playAgainBtn.setVisible(true);
+                    client.setMatchId(-1);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -174,8 +195,8 @@ public class GamePanel extends JPanel  implements ActionListener {
         int col = value[1];
         System.out.println(row + " " + col);
         try {
-            client.makeMove(client.getPlayerName(), row, col);
-            char[][] board = client.getBoard(client.getPlayerName());
+            client.makeMove( row, col);
+            char[][] board = client.getBoard();
 
             printBoard(board);
 //            String winner = client.getWinner(client.getPlayerName(), client.getMatchId());

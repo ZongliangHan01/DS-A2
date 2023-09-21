@@ -1,5 +1,6 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Match {
@@ -9,6 +10,9 @@ public class Match {
     Player currentPlayer;
     boolean ready;
     char[][] board;
+
+    ArrayList<String> messages = new ArrayList<>();
+    ArrayList<String> messageBuffer = new ArrayList<>();
     boolean player1Finished;
     boolean player2Finished;
 
@@ -20,15 +24,40 @@ public class Match {
         this.player2Finished = false;
     }
 
+    public void addMessage(String message) {
+        System.out.println("message added: " + message);
+        this.messages.add(message);
+    }
+
+    public ArrayList<String> getMessages(Player player) {
+        ArrayList<String> playerMessages = player.getMessages();
+        ArrayList<String> newMessages = new ArrayList<>();
+        if (this.messages.size() > playerMessages.size()) {
+            for (int i = playerMessages.size(); i < this.messages.size(); i++) {
+                newMessages.add(this.messages.get(i));
+                playerMessages.add(this.messages.get(i));
+            }
+
+        }
+
+        return newMessages;
+    }
+
     public void finishPlayer(String name) {
         if (this.player1.getName().equals(name)) {
             this.player1Finished = true;
+            this.player1.cleanMessages();
         }
         else {
             this.player2Finished = true;
+            this.player2.cleanMessages();
         }
     }
 
+    public Player[] getPlayers() {
+        Player[] players = {this.player1, this.player2};
+        return players;
+    }
     public Player getPlayer1() {
         return this.player1;
     }
@@ -119,6 +148,15 @@ public class Match {
 
         char winner = ' ';
         for (int i = 0; i < 3; i++) {
+            if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
+                winner = board[0][0];
+                break;
+            }
+            if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ') {
+                winner = board[0][2];
+                break;
+            }
+
             // Check rows
             if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ') {
                 winner = board[i][0];
@@ -133,12 +171,12 @@ public class Match {
         }
 
         // Check diagonals
-        if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
-            winner = board[0][0];
-        }
-        if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ') {
-            winner = board[0][2];
-        }
+//        if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
+//            winner = board[0][0];
+//        }
+//        if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ') {
+//            winner = board[0][2];
+//        }
 
 
 
@@ -177,11 +215,13 @@ public class Match {
     private boolean isBoardFull(char[][] board) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (board[i][j] == ' ') {
+                if (board[i][j] == 0) {
+                    System.out.println(board[i][j]);
                     return false; // Empty cell found
                 }
             }
         }
+        System.out.println("board full");
         return true; // All cells are filled
     }
 

@@ -10,11 +10,12 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Random;
 
-public class ClientGUI {
+public class ClientGUI  {
     Random random = new Random();
     JFrame frame = new JFrame();
-    JPanel gamePanel = new JPanel();
-
+//    JPanel gamePanel = new JPanel();
+//
+//    JPanel chatPanel = new ChatPanel();
 
     public static void main(String[] args) throws NotBoundException, RemoteException, InterruptedException {
 
@@ -37,16 +38,28 @@ public class ClientGUI {
 
     }
 
+
+
     public static void createAndShowGUI() throws NotBoundException, RemoteException, InterruptedException {
         JFrame frame = new JFrame("Tic-Tac-Toe");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800,800);
+        frame.setSize(1000,1000);
         frame.getContentPane().setBackground(new Color(50,50,50));
-        frame.setLayout(new BorderLayout());
+        frame.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
         frame.setVisible(true);
 
-        JPanel gamePanel = new GamePanel();
-        frame.add(gamePanel);
+        App client = new App();
+        JPanel chatPanel = new ChatPanel(client);
+        JPanel gamePanel = new GamePanel(client, chatPanel);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        frame.add(gamePanel, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        frame.add(chatPanel, gbc);
 //        String matchInfo = client.joinMatch(client.getPlayerName());
 //        if (matchInfo == null) {
 //            matchInfo = client.joinMatch(client.getPlayerName());

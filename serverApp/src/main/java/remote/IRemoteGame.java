@@ -2,6 +2,7 @@ package src.main.java.remote;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface IRemoteGame extends Remote {
     // return a list of points of given name on the board
@@ -29,5 +30,9 @@ public interface IRemoteGame extends Remote {
 
     public boolean matchReady(int matchId) throws RemoteException;
 
+    public void sendMessages( int matchId, String message) throws RemoteException;
 
+    public ArrayList<String> getMessages(int matchId, String name) throws RemoteException;
+
+    public boolean matchFinished(int matchId) throws RemoteException;
 }

@@ -148,7 +148,13 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
         return -1;
     }
 
-
+    public boolean matchFinished(int matchId) throws RemoteException {
+        Match match = getMatchById(matchId);
+        if (match == null) {
+            return true;
+        }
+        return match.isFinished();
+    }
     public String getWinner(int matchId, String name) throws RemoteException {
         Match match = getMatchById(matchId);
         return match.getWinner(name);
@@ -184,18 +190,32 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
 //        }
 //
 //    }
-public void cleanUp() throws InterruptedException {
-    while (true) {
-        Iterator<Match> iterator = this.matches.iterator();
-        while (iterator.hasNext()) {
-            Match match = iterator.next();
-            if (match.isFinished()) {
-                System.out.println("Match " + match.getId() + " is finished");
-                iterator.remove(); // Safely remove the match using the iterator
+    public void cleanUp() throws InterruptedException {
+        while (true) {
+            Iterator<Match> iterator = this.matches.iterator();
+            while (iterator.hasNext()) {
+                Match match = iterator.next();
+                if (match.isFinished()) {
+                    System.out.println("Match " + match.getId() + " is finished");
+                    iterator.remove(); // Safely remove the match using the iterator
+                }
             }
+            Thread.sleep(2000);
         }
-        Thread.sleep(2000);
     }
-}
 
+
+    public void sendMessages( int matchId, String message) throws RemoteException {
+        Match match = getMatchById(matchId);
+        match.addMessage(message);
+    }
+
+    public ArrayList<String> getMessages(int matchId, String name) throws RemoteException {
+        Match match = getMatchById(matchId);
+        Player player = getPlayerByName(name);
+        if (match == null || player == null) {
+            return null;
+        }
+        return match.getMessages(player);
+    }
 }

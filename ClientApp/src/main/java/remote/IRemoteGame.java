@@ -17,16 +17,15 @@ public interface IRemoteGame extends Remote {
 
     public String getWinner(int matchId, String name) throws RemoteException;
 
-    public String getWinner() throws RemoteException;
-
-    public int joinMatch(String name, int matchId) throws RemoteException;
-
     public int hasMatch(String name) throws RemoteException;
 
     public boolean matchReady(int matchId) throws RemoteException;
-    // get the name of winner
-//    public String getWinner() throws RemoteException;
+
     public String getOpponent(String name) throws RemoteException;
 
+    public void sendMessages( int matchId, String message) throws RemoteException;
 
+    public ArrayList<String> getMessages(int matchId, String name) throws RemoteException;
+
+    public boolean matchFinished(int matchId) throws RemoteException;
 }
