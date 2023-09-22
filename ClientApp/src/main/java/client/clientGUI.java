@@ -43,22 +43,26 @@ public class ClientGUI  {
     public static void createAndShowGUI() throws NotBoundException, RemoteException, InterruptedException {
         JFrame frame = new JFrame("Tic-Tac-Toe");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000,1000);
+        frame.setSize(1100,1000);
         frame.getContentPane().setBackground(new Color(50,50,50));
         frame.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         frame.setVisible(true);
 
+
         App client = new App();
         JPanel chatPanel = new ChatPanel(client);
-        JPanel gamePanel = new GamePanel(client, chatPanel);
+//        chatPanel.setSize(300, 1000);
 
-        gbc.gridx = 1;
-        gbc.gridy = 1;
+        JPanel gamePanel = new GamePanel(client, chatPanel);
+//        gamePanel.setSize(700, 1000);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         frame.add(gamePanel, gbc);
 
-        gbc.gridx = 2;
-        gbc.gridy = 1;
+        gbc.gridx = 1;
+        gbc.gridy = 0;
         frame.add(chatPanel, gbc);
 //        String matchInfo = client.joinMatch(client.getPlayerName());
 //        if (matchInfo == null) {

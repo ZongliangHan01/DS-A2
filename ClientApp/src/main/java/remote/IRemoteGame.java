@@ -28,4 +28,10 @@ public interface IRemoteGame extends Remote {
     public ArrayList<String> getMessages(int matchId, String name) throws RemoteException;
 
     public boolean matchFinished(int matchId) throws RemoteException;
+
+    public void playerExit(String name) throws RemoteException;
+
+    public int countDown(int matchId, String name) throws RemoteException;
+
+    public void resetCountDown(int matchId) throws RemoteException;
 }

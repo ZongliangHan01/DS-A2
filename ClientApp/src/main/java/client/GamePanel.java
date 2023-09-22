@@ -15,15 +15,30 @@ public class GamePanel extends JPanel  implements ActionListener {
     JPanel title_panel = new JPanel();
     JPanel button_panel = new JPanel();
     JTextArea textfield = new JTextArea();
+
+    JTextArea countDownField = new JTextArea();
     JButton playAgainBtn = new JButton("Play Again");
+
+    JButton exitBtn = new JButton("Exit");
     JButton[] buttons = new JButton[9];
     App client;
     public GamePanel(App client, JPanel chatPanel) throws NotBoundException, RemoteException, InterruptedException {
-        setSize(600,1000);
+//        setSize(700,1000);
+        setPreferredSize(new Dimension(800, 800));
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+
+        JPanel ticTacToePanel = new JPanel();
+        ticTacToePanel.setLayout(new GridBagLayout());
+        ticTacToePanel.setPreferredSize(new Dimension(600, 800));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        add(ticTacToePanel, gbc);
+
+
         textfield.setBackground(new Color(25,25,25));
         textfield.setForeground(new Color(25,255,0));
+
         textfield.setFont(new Font("Ink Free",Font.BOLD,25));
 //        textfield.setHorizontalAlignment(JLabel.CENTER);
         textfield.setText("Tic-Tac-Toe");
@@ -34,10 +49,8 @@ public class GamePanel extends JPanel  implements ActionListener {
         textfield.setPreferredSize(new Dimension(600, 100));
         gbc.gridx = 0;
         gbc.gridy = 0;
-        add(textfield);
-//        title_panel.setLayout(new BorderLayout());
-//        title_panel.setBounds(0,0,500,100);
-//        title_panel.add(textfield);
+        ticTacToePanel.add(textfield);
+
 
         button_panel.setLayout(new GridLayout(3,3));
         button_panel.setBackground(new Color(150,150,150));
@@ -58,13 +71,30 @@ public class GamePanel extends JPanel  implements ActionListener {
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        add(button_panel, gbc);
+        ticTacToePanel.add(button_panel, gbc);
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new GridBagLayout());
+        infoPanel.setPreferredSize(new Dimension(200, 800));
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        add(infoPanel, gbc);
+
+        countDownField.setSize(200,200);
+        countDownField.setFont(new Font("MV Boli",Font.BOLD,20));
+        countDownField.setText("5");
+        countDownField.setOpaque(true);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        infoPanel.add(countDownField, gbc);
 
         playAgainBtn.setEnabled(false);
         playAgainBtn.setVisible(false);
+        playAgainBtn.setBackground(Color.red);
         gbc.gridx = 0;
-        gbc.gridy = 2;
-        add(playAgainBtn, gbc);
+        gbc.gridy = 1;
+        infoPanel.add(playAgainBtn, gbc);
         playAgainBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -82,7 +112,24 @@ public class GamePanel extends JPanel  implements ActionListener {
             }
         });
 
-
+        exitBtn.setEnabled(true);
+        exitBtn.setVisible(true);
+        exitBtn.setBackground(Color.green);
+        exitBtn.setSize(100, 100);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        infoPanel.add(exitBtn, gbc);
+        exitBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    client.playerExit();
+                    System.exit(0);
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -148,7 +195,7 @@ public class GamePanel extends JPanel  implements ActionListener {
                 while (winner.equals("No winner")) {
 
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(200);
                         board = client.getBoard();
                         printBoard(board);
                         winner = client.getWinner();
@@ -177,6 +224,71 @@ public class GamePanel extends JPanel  implements ActionListener {
 
         });
         thread.start();
+
+        Thread countDownThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("count down thread running*************************");
+                try {
+                    while (true) {
+//                        if (client.getOpponent() == null) {
+//                            continue;
+//                        }
+                        Thread.sleep(50);
+                        if (client.getOpponent() != null) {
+//                            System.out.println(client.getOpponent() + " is ready");
+                            int countDown = client.countDown();
+                            countDownField.setText(String.valueOf(countDown));
+//                            System.out.println("count down: " + countDown);
+                            if (countDown == 0) {
+//                                Thread.sleep(700);
+                                int[] value = randomMove(client.getBoard());
+//                                if (value == null) {
+//                                    System.out.println("do not find empty cell");
+//                                    client.resetCountDown();
+//                                    continue;
+//
+//                                }
+                                if (client.isMyTurn()) {
+                                    client.resetCountDown();
+                                }
+                                int row = value[0];
+                                int col = value[1];
+                                client.makeMove(row, col);
+                                char[][] board = client.getBoard();
+                                printBoard(board);
+//                                Thread.sleep(200);
+
+
+                            }
+                        }
+                    }
+
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+        });
+        countDownThread.start();
+    }
+
+    public int[] randomMove(char[][] board) {
+        // print out yhe board
+        for (int i=0; i<3; i++) {
+            System.out.println(board[i]);
+        }
+        for (int i=0; i<3; i++) {
+            for (int j=0; j<3; j++) {
+                if (board[i][j] == '\u0000') {
+                    return new int[]{i, j};
+//                    System.out.println("random move: " + i + " " + j);
+                }
+            }
+        }
+        return null;
     }
 
     public void reset() {

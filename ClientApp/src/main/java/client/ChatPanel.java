@@ -79,7 +79,7 @@ public class ChatPanel extends JPanel {
 
                         while (true) {
 //                        while (!client.matchFinished()) {
-                            System.out.println("oppoent: " + client.getOpponent() + "match id: "+ client.getMatchId());
+//                            System.out.println("oppoent: " + client.getOpponent() + "match id: "+ client.getMatchId());
                             sendButton.setEnabled(true);
                             if (client.getMatchId() == -1 || client.getOpponent() == null) {
                                 sendButton.setEnabled(false);
@@ -87,14 +87,14 @@ public class ChatPanel extends JPanel {
                             }
                             Thread.sleep(1000);
                             if (client.getOpponent() != null) {
-                                System.out.println("thread is running");
+//                                System.out.println("thread is running");
 
                                 ArrayList<String> messages = client.getMessages();
                                 //                            System.out.println("Opponent: " + client.getOpponent() + " get messages");
 //                            chatArea.setText("");
                                 if (messages != null) {
                                     for (String message : messages) {
-                                        System.out.println(message);
+//                                        System.out.println(message);
                                         chatArea.append(message);
                                     }
                                 }
@@ -124,7 +124,7 @@ public class ChatPanel extends JPanel {
                         inputField.setText("");
                         String message = client.getPlayerName()+": "+text + "\n";
                         client.sendMessages(message);
-                        System.out.println(message);
+//                        System.out.println(message);
                     }
                 } catch (RemoteException ex) {
                     throw new RuntimeException(ex);
@@ -156,17 +156,17 @@ public class ChatPanel extends JPanel {
 
 
                     while (!client.matchFinished()) {
-                        System.out.println("oppoent: " + client.getOpponent() + "match id: "+ client.getMatchId());
+//                        System.out.println("oppoent: " + client.getOpponent() + "match id: "+ client.getMatchId());
                         Thread.sleep(1000);
                         if (client.getOpponent() != null) {
-                            System.out.println("thread is running");
+//                            System.out.println("thread is running");
 
                             ArrayList<String> messages = client.getMessages();
                             //                            System.out.println("Opponent: " + client.getOpponent() + " get messages");
 //                            chatArea.setText("");
                             if (messages != null) {
                                 for (String message : messages) {
-                                    System.out.println(message);
+//                                    System.out.println(message);
                                     chatArea.append(message);
                                 }
                             }

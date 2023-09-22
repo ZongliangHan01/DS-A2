@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Player {
     private String name;
     private Match match;
-    private long timeStamp;
+
 
     private ArrayList<String> messages = new ArrayList<>();
 
@@ -36,13 +36,6 @@ public class Player {
         this.match = match;
     }
 
-    public long getTimeStamp() {
-        return this.timeStamp;
-    }
-
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
-    }
 
     public String getMessage(String message) {
         System.out.println(message);

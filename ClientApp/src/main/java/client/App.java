@@ -14,6 +14,8 @@ public class App {
     int matchId = -1;
     String opponent;
     IRemoteGame remoteGame;
+
+    int countDown = 5;
     public App() throws NotBoundException, RemoteException, InterruptedException {
         register("localhost");
 
@@ -25,6 +27,17 @@ public class App {
 //        this.playerName = name;
 //        this.matchId = matchId;
 //        this.opponent = opponent;
+    }
+
+    public int countDown() throws RemoteException {
+//        this.countDown--;
+//        return this.countDown;
+        return this.remoteGame.countDown(this.matchId, this.playerName);
+    }
+
+    public void resetCountDown() throws RemoteException {
+//        this.countDown = 5;
+        this.remoteGame.resetCountDown(this.matchId);
     }
 
     public String getPlayerName() {
@@ -86,7 +99,7 @@ public class App {
     public String joinMatch() throws RemoteException, InterruptedException {
         if (!this.remoteGame.matchReady(this.matchId)) {
             System.out.println("Waiting for another player");
-            Thread.sleep(5000);
+            Thread.sleep(500);
             return null;
         }
 
@@ -102,6 +115,9 @@ public class App {
         return this.remoteGame.getWinner(this.matchId, playerName);
     }
 
+    public boolean isMyTurn() throws RemoteException {
+        return this.remoteGame.isMyTurn(playerName);
+    }
     public int makeMove(int x, int y) throws RemoteException {
         if (this.remoteGame.isMyTurn(playerName)) {
             char[][] board = this.remoteGame.getBoard(playerName);
@@ -139,6 +155,10 @@ public class App {
 
     public ArrayList<String> getMessages() throws RemoteException {
         return this.remoteGame.getMessages(matchId, playerName);
+    }
+
+    public void playerExit() throws RemoteException {
+        this.remoteGame.playerExit(playerName);
     }
 //    public static void main(String[] args) {
 //        Scanner scanner = new Scanner(System.in);

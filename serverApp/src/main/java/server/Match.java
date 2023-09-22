@@ -16,12 +16,59 @@ public class Match {
     boolean player1Finished;
     boolean player2Finished;
 
+    boolean player1Exit;
+    boolean player2Exit;
+
+    int countDown = 5;
+
+
+
+    public int getCountDown(String name) {
+        return this.countDown;
+    }
+
+    public void resetCountDown() {
+        this.countDown = 5;
+    }
+
     public Match(Player player1) {
         this.player1 = player1;
         this.ready = false;
         this.id = new Random().nextInt(1000)+1;
         this.player1Finished = false;
         this.player2Finished = false;
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (!player1Finished && !player2Finished) {
+                        System.out.println("count down: " + countDown);
+                        Thread.sleep(1000); // 1 second
+
+                        if (countDown>0 && player2 != null && player1 != null) {
+                            countDown--;
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+        thread.start();
+    }
+
+    public void playerExit(Player player) {
+        if (this.player1 == player) {
+            this.player1Exit = true;
+//            if (this.player2 == null) {
+//                this.player2Finished = true;
+//            }
+        }
+        else {
+            this.player2Exit = true;
+        }
     }
 
     public void addMessage(String message) {
@@ -147,6 +194,16 @@ public class Match {
         char[][] board = this.board;
 
         char winner = ' ';
+
+        if (this.player1Exit) {
+            finishPlayer(name);
+            return this.player2.getName();
+        }
+        else if (this.player2Exit) {
+            finishPlayer(name);
+            return this.player1.getName();
+        }
+
         for (int i = 0; i < 3; i++) {
             if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
                 winner = board[0][0];

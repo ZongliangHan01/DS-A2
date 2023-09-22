@@ -218,4 +218,30 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
         }
         return match.getMessages(player);
     }
+
+    public void playerExit(String name) throws RemoteException {
+        Player player = getPlayerByName(name);
+        if (player == null) {
+            return;
+        }
+        Match match = player.getMatch();
+        if (match == null) {
+            return;
+        }
+        if (match.getPlayer2() == null) {
+            this.matches.remove(match);
+            return;
+        }
+        match.playerExit(player);
+    }
+
+    @Override
+    public int countDown(int matchId, String name) throws RemoteException {
+        return getMatchById(matchId).getCountDown(name);
+    }
+
+    @Override
+    public void resetCountDown(int matchId) throws RemoteException {
+        getMatchById(matchId).resetCountDown();
+    }
 }
