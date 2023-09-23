@@ -160,6 +160,14 @@ public class App {
     public void playerExit() throws RemoteException {
         this.remoteGame.playerExit(playerName);
     }
+
+    public String getRank() throws RemoteException {
+        return this.remoteGame.getRank(playerName);
+    }
+
+    public String getScore() throws RemoteException {
+        return this.remoteGame.getScore(playerName);
+    }
 //    public static void main(String[] args) {
 //        Scanner scanner = new Scanner(System.in);
 //        try {

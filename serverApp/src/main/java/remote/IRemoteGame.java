@@ -41,4 +41,8 @@ public interface IRemoteGame extends Remote {
     public int countDown(int matchId, String name) throws RemoteException;
 
     public void resetCountDown(int matchId) throws RemoteException;
+
+    public String getRank(String name) throws RemoteException;
+
+    public String getScore(String name) throws RemoteException;
 }

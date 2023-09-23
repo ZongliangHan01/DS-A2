@@ -197,10 +197,12 @@ public class Match {
 
         if (this.player1Exit) {
             finishPlayer(name);
+            updateScore(this.player2, name);
             return this.player2.getName();
         }
         else if (this.player2Exit) {
             finishPlayer(name);
+            updateScore(this.player1, name);
             return this.player1.getName();
         }
 
@@ -244,21 +246,47 @@ public class Match {
         else if (winner==' ' && isBoardFull(board)) {
             finishPlayer(name);
             System.out.println("finish player"+name);
+            updateScore(name);
             return "Draw";
         }
         else if (winner == 'X') {
             finishPlayer(name);
             System.out.println("finish player"+name);
             System.out.println("winner is X");
+            updateScore(this.player1, name);
             return this.player1.getName();
         }
         else if (winner == 'O'){
             finishPlayer(name);
             System.out.println("finish player"+name);
             System.out.println("winner is O");
+            updateScore(this.player2, name);
             return this.player2.getName();
         }
         return "No winner";
+    }
+
+    private void updateScore(Player winner, String name) {
+        if (winner.getName().equals(name)) {
+            winner.setScore(winner.getScore() + 5);
+        }
+        else {
+            if (winner == this.player1) {
+                this.player2.setScore(this.player2.getScore() - 5);
+            }
+            else {
+                this.player1.setScore(this.player1.getScore() - 5);
+            }
+        }
+    }
+
+    private void  updateScore(String name) {
+        if (this.player1.getName().equals(name)) {
+            this.player1.setScore(this.player1.getScore() + 2);
+        }
+        else {
+            this.player2.setScore(this.player2.getScore() + 2);
+        }
     }
 
     public String getOpponent(Player player) {
@@ -273,7 +301,6 @@ public class Match {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 if (board[i][j] == 0) {
-                    System.out.println(board[i][j]);
                     return false; // Empty cell found
                 }
             }

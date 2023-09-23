@@ -16,6 +16,10 @@ public class GamePanel extends JPanel  implements ActionListener {
     JPanel button_panel = new JPanel();
     JTextArea textfield = new JTextArea();
 
+    JLabel label = new JLabel();
+    JTextField scoreField = new JTextField();
+    JTextField rankField = new JTextField();
+
     JTextArea countDownField = new JTextArea();
     JButton playAgainBtn = new JButton("Play Again");
 
@@ -81,20 +85,52 @@ public class GamePanel extends JPanel  implements ActionListener {
         gbc.gridy = 0;
         add(infoPanel, gbc);
 
+        label.setText("<html>Welcome<br>" + client.getPlayerName() + "</html>");
+        label.setFont(new Font("MV Boli",Font.BOLD | Font.ITALIC,30));
+        label.setPreferredSize(new Dimension(200, 200));
+        label.setHorizontalAlignment(JLabel.CENTER);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.NORTH;
+//        gbc.insets.set(10, 10, 50, 10);
+        infoPanel.add(label, gbc);
+
         countDownField.setSize(200,200);
-        countDownField.setFont(new Font("MV Boli",Font.BOLD,20));
+        countDownField.setFont(new Font("MV Boli",Font.BOLD,30));
         countDownField.setText("30");
         countDownField.setOpaque(true);
         countDownField.setEditable(false);
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
+        gbc.insets.set(50, 10, 50, 10);
         infoPanel.add(countDownField, gbc);
+
+        scoreField.setSize(200,100);
+        scoreField.setFont(new Font("MV Boli",Font.PLAIN,20));
+        scoreField.setText("Score: ");
+        scoreField.setOpaque(true);
+        scoreField.setEditable(false);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.insets.set(0, 10, 0, 10);
+        infoPanel.add(scoreField, gbc);
+
+        rankField.setSize(200,200);
+        rankField.setFont(new Font("MV Boli",Font.PLAIN,20));
+        rankField.setText("Rank: ");
+        rankField.setOpaque(true);
+        rankField.setEditable(false);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+//        gbc.insets.set(10, 10, 50, 10);
+        infoPanel.add(rankField, gbc);
 
         playAgainBtn.setEnabled(false);
         playAgainBtn.setVisible(false);
-        playAgainBtn.setBackground(Color.red);
+        playAgainBtn.setFont(new Font("MV Boli",Font.BOLD,20));
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 4;
+        gbc.insets.set(30, 10, 10, 10);
         infoPanel.add(playAgainBtn, gbc);
         playAgainBtn.addActionListener(new ActionListener() {
             @Override
@@ -115,10 +151,11 @@ public class GamePanel extends JPanel  implements ActionListener {
 
         exitBtn.setEnabled(true);
         exitBtn.setVisible(true);
-        exitBtn.setBackground(Color.green);
         exitBtn.setSize(100, 100);
+        exitBtn.setFont(new Font("MV Boli",Font.BOLD,20));
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 5;
+//        gbc.insets.set(10, 10, 10, 10);
         infoPanel.add(exitBtn, gbc);
         exitBtn.addActionListener(new ActionListener() {
             @Override
@@ -159,6 +196,8 @@ public class GamePanel extends JPanel  implements ActionListener {
 //        App client = new App();
 //        this.client = client;
         int matchId = this.client.hasMatch();
+        rankField.setText("Rank: " + client.getRank());
+        scoreField.setText("Score: " + client.getScore());
         textfield.setText("Waiting for another player...");
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -184,6 +223,7 @@ public class GamePanel extends JPanel  implements ActionListener {
 //                    textfield.setText("Waiting for another player...");
                 }
                 textfield.setText("Match ID: " + matchId + " Opponent: " + opponent);
+
                 String winner = null;
                 try {
                     winner = client.getWinner();
@@ -197,6 +237,7 @@ public class GamePanel extends JPanel  implements ActionListener {
 
                     try {
                         Thread.sleep(200);
+
                         board = client.getBoard();
                         printBoard(board);
                         winner = client.getWinner();
@@ -226,6 +267,8 @@ public class GamePanel extends JPanel  implements ActionListener {
                         textfield.setText("You Lose! \nWinner: " + winner);
                     }
 //                    textfield.setText("Winner: " + winner);
+                    rankField.setText("Rank: " + client.getRank());
+                    scoreField.setText("Score: " + client.getScore());
                     playAgainBtn.setEnabled(true);
                     playAgainBtn.setVisible(true);
                     client.setMatchId(-1);
@@ -247,10 +290,11 @@ public class GamePanel extends JPanel  implements ActionListener {
 //                        if (client.getOpponent() == null) {
 //                            continue;
 //                        }
-                        Thread.sleep(50);
+                        Thread.sleep(300);
                         if (client.getOpponent() != null) {
 //                            System.out.println(client.getOpponent() + " is ready");
                             int countDown = client.countDown();
+//                            countDownField.setText(countDown);
                             countDownField.setText(String.valueOf(countDown));
 //                            System.out.println("count down: " + countDown);
                             if (countDown == 0) {

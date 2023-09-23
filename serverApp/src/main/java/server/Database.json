@@ -1,0 +1,25 @@
+[ {
+  "username" : "Sherry",
+  "score" : 20.0,
+  "rank" : 1,
+  "matchId" : 757,
+  "messages" : [ ]
+}, {
+  "username" : "Harry",
+  "score" : 11.0,
+  "rank" : 2,
+  "matchId" : 757,
+  "messages" : [ ]
+}, {
+  "username" : "Larry",
+  "score" : 2.0,
+  "rank" : 3,
+  "matchId" : 127,
+  "messages" : [ ]
+}, {
+  "username" : "123",
+  "score" : 0.0,
+  "rank" : 4,
+  "matchId" : 507,
+  "messages" : [ ]
+} ]
