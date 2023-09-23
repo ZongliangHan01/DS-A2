@@ -83,8 +83,9 @@ public class GamePanel extends JPanel  implements ActionListener {
 
         countDownField.setSize(200,200);
         countDownField.setFont(new Font("MV Boli",Font.BOLD,20));
-        countDownField.setText("5");
+        countDownField.setText("30");
         countDownField.setOpaque(true);
+        countDownField.setEditable(false);
         gbc.gridx = 0;
         gbc.gridy = 0;
         infoPanel.add(countDownField, gbc);
@@ -199,6 +200,11 @@ public class GamePanel extends JPanel  implements ActionListener {
                         board = client.getBoard();
                         printBoard(board);
                         winner = client.getWinner();
+                        if (client.isMyTurn()) {
+                            textfield.setText("Match ID: " + matchId + " Opponent: " + opponent  +"\nYour turn");
+                        } else {
+                            textfield.setText("Match ID: " + matchId + " Opponent: " + opponent  +"\n"+ opponent+"'s turn");
+                        }
 
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
@@ -212,7 +218,14 @@ public class GamePanel extends JPanel  implements ActionListener {
                     for(int i=0;i<9;i++) {
                         buttons[i].setEnabled(false);
                     }
-                    textfield.setText("Winner: " + winner);
+                    if (winner.equals("Draw")) {
+                        textfield.setText("Draw Game");
+                    } else if (winner.equals(client.getPlayerName())) {
+                        textfield.setText("You Win! \nWinner: " + winner);
+                    } else {
+                        textfield.setText("You Lose! \nWinner: " + winner);
+                    }
+//                    textfield.setText("Winner: " + winner);
                     playAgainBtn.setEnabled(true);
                     playAgainBtn.setVisible(true);
                     client.setMatchId(-1);

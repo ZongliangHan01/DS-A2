@@ -23,7 +23,7 @@ public class ClientGUI  {
 //        App client = new App();
         SwingUtilities.invokeLater(() -> {
             try {
-                createAndShowGUI();
+                createAndShowGUI(args[0]);
             } catch (NotBoundException e) {
                 throw new RuntimeException(e);
             } catch (RemoteException e) {
@@ -40,7 +40,7 @@ public class ClientGUI  {
 
 
 
-    public static void createAndShowGUI() throws NotBoundException, RemoteException, InterruptedException {
+    public static void createAndShowGUI(String ip) throws NotBoundException, RemoteException, InterruptedException {
         JFrame frame = new JFrame("Tic-Tac-Toe");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1100,1000);
@@ -50,7 +50,7 @@ public class ClientGUI  {
         frame.setVisible(true);
 
 
-        App client = new App();
+        App client = new App(ip);
         JPanel chatPanel = new ChatPanel(client);
 //        chatPanel.setSize(300, 1000);
 

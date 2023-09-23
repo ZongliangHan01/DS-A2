@@ -16,8 +16,8 @@ public class App {
     IRemoteGame remoteGame;
 
     int countDown = 5;
-    public App() throws NotBoundException, RemoteException, InterruptedException {
-        register("localhost");
+    public App(String ip) throws NotBoundException, RemoteException, InterruptedException {
+        register(ip);
 
 //        String name = addPlayer();
 //        String matchInfo = joinMatch(name);
@@ -133,7 +133,7 @@ public class App {
                 System.out.println("Invalid move");
                 return moveStatus;
             }
-
+            resetCountDown();
             System.out.println("move made, waiting for other player moving");
             board = this.remoteGame.getBoard(playerName);
             for (int i = 0; i < 3; i++) {

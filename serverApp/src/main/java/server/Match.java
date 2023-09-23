@@ -19,7 +19,7 @@ public class Match {
     boolean player1Exit;
     boolean player2Exit;
 
-    int countDown = 5;
+    int countDown = 30;
 
 
 
@@ -28,7 +28,7 @@ public class Match {
     }
 
     public void resetCountDown() {
-        this.countDown = 5;
+        this.countDown = 30;
     }
 
     public Match(Player player1) {

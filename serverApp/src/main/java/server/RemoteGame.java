@@ -237,7 +237,11 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
 
     @Override
     public int countDown(int matchId, String name) throws RemoteException {
-        return getMatchById(matchId).getCountDown(name);
+        Match match = getMatchById(matchId);
+        if (match == null) {
+            return 30;
+        }
+        return match.getCountDown(name);
     }
 
     @Override
