@@ -33,6 +33,17 @@ public class RMIServer {
             registry.bind("TicTacToe", remoteGame);
 
             System.out.println("TicTacToe Server ready");
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ((RemoteGame) remoteGame).checkAlive();
+                }
+
+            });
+            thread.start();
+
+
             ((RemoteGame) remoteGame).cleanUp();
             //The server will continue running as long as there are remote objects exported into
             //the RMI runtime, to re	move remote objects from the

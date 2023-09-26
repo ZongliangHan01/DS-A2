@@ -1,6 +1,8 @@
 package server;
 
 import java.util.ArrayList;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Player {
@@ -13,15 +15,38 @@ public class Player {
     @JsonProperty("rank")
     private int rank;
 
+    @JsonIgnore
+    private boolean connected;
+
+
+
+    @JsonIgnore
+    private long lastActiveTime = System.currentTimeMillis();
 
     public Player(@JsonProperty("username") String username, @JsonProperty("score") int score, @JsonProperty("rank") int rank) {
         this.name = username;
         this.score = score;
         this.rank = rank;
         this.matchId = -1;
+        this.connected = true;
     }
 
 
+    public long getLastActiveTime() {
+        return this.lastActiveTime;
+    }
+
+    public void setLastActiveTime(long lastActiveTime) {
+        this.lastActiveTime = lastActiveTime;
+    }
+
+    public boolean isConnected() {
+        return this.connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
 
     private ArrayList<String> messages = new ArrayList<>();
 

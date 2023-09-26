@@ -38,4 +38,8 @@ public interface IRemoteGame extends Remote {
     public String getRank(String name) throws RemoteException;
 
     public String getScore(String name) throws RemoteException;
+
+    public void sendHeartBeat(String name, long currentTime) throws RemoteException;
+
+    public boolean opponentCrashed(String name) throws RemoteException;
 }

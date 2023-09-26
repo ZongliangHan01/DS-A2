@@ -206,54 +206,30 @@ public class GamePanel extends JPanel  implements ActionListener {
                 String opponent = null;
                 try {
                     opponent = client.joinMatch();
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                while (opponent == null) {
-                    try {
+                    while (opponent == null) {
                         opponent = client.joinMatch();
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
                     }
-//                    System.out.println("test test test");
-//                    textfield.setText("Waiting for another player...");
-                }
-                textfield.setText("Match ID: " + matchId + " Opponent: " + opponent);
-
-                String winner = null;
-                try {
+                    textfield.setText("Match ID: " + matchId + " Opponent: " + opponent);
+                    String winner = null;
                     winner = client.getWinner();
+                    char[][] board;
 
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-                char[][] board;
-
-                while (winner.equals("No winner")) {
-
-                    try {
+                    while (winner.equals("No winner")) {
                         Thread.sleep(200);
 
                         board = client.getBoard();
                         printBoard(board);
                         winner = client.getWinner();
+                        while (client.opponentCrashed()) {
+                            textfield.setText("Opponent crashed");
+                        }
                         if (client.isMyTurn()) {
                             textfield.setText("Match ID: " + matchId + " Opponent: " + opponent  +"\nYour turn");
                         } else {
                             textfield.setText("Match ID: " + matchId + " Opponent: " + opponent  +"\n"+ opponent+"'s turn");
                         }
-
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
                     }
-                }
-                try {
+
                     board = client.getBoard();
                     printBoard(board);
                     for(int i=0;i<9;i++) {
@@ -272,10 +248,12 @@ public class GamePanel extends JPanel  implements ActionListener {
                     playAgainBtn.setEnabled(true);
                     playAgainBtn.setVisible(true);
                     client.setMatchId(-1);
+
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-
             }
 
         });
@@ -330,6 +308,24 @@ public class GamePanel extends JPanel  implements ActionListener {
 
         });
         countDownThread.start();
+
+
+        Thread heartBeatThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        Thread.sleep(500);
+                        client.sendHeartBeat();
+                    }
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        heartBeatThread.start();
     }
 
     public int[] randomMove(char[][] board) {

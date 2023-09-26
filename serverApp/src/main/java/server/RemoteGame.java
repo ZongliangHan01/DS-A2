@@ -19,6 +19,63 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
         this.matches = new ArrayList<>();
     }
 
+    public boolean opponentCrashed(String name) throws RemoteException {
+        String opponentName = getOpponent(name);
+        if (opponentName == null) {
+            return false;
+        }
+        Player opponent = getPlayerByName(opponentName);
+        if (opponent == null) {
+            return false;
+        }
+
+        if (!opponent.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
+    public void sendHeartBeat(String name, long currentTime) throws RemoteException {
+        Player player = getPlayerByName(name);
+        if (player == null) {
+            return;
+        }
+        player.setLastActiveTime(currentTime);
+    }
+
+    public void checkAlive() {
+        while (true) {
+            long currentTime = System.currentTimeMillis();
+            Iterator<Player> iterator = this.players.iterator();
+            while (iterator.hasNext()) {
+                Player player = iterator.next();
+
+                if (currentTime - player.getLastActiveTime() > 30000) {
+                    System.out.println("Player " + player.getName() + " is removed");
+                    Match match = getMatchById(player.getMatchId());
+                    if (match != null) {
+                        match.setCrashed(true);
+                    }
+                    iterator.remove();
+                    continue;
+                }
+                if (currentTime - player.getLastActiveTime() > 2000) {
+                    player.setConnected(false);
+                    System.out.println("Player " + player.getName() + " is disconnected");
+                    continue;
+                }
+
+                player.setConnected(true);
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     private Player getPlayerByName(String name) {
         for (Player player : this.players) {
             if (player.getName().equals(name)) {
@@ -95,8 +152,14 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
     @Override
     public synchronized int addPlayer(String name) throws RemoteException {
         for (Player player: this.players) {
-            if (player.getName().equals(name)) {
+            System.out.println(player.getName() + " " + player.isConnected());
+            if (player.getName().equals(name) && player.isConnected()) {
                 return 0;
+            }
+            if (player.getName().equals(name) && !player.isConnected()) {
+//                player.setConnected(true);
+                System.out.println("Player " + player.getName() + " is reconnected" + " " + player.isConnected() + " " + player.getMatchId());
+                return 1;
             }
         }
         File jsonFile = new File("/Users/zonglianghan/Desktop/DS/DS-A2/serverApp/src/main/java/server/Database.json");
@@ -117,10 +180,17 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
     }
 
     public int hasMatch(String name) throws RemoteException {
+
         File jsonFile = new File("/Users/zonglianghan/Desktop/DS/DS-A2/serverApp/src/main/java/server/Database.json");
         List<Player> users = loadDatabase(jsonFile);
 
         Player player = getPlayerByName(name);
+
+        if (!player.isConnected() && player.getMatchId() != -1) {
+            player.setConnected(true);
+            System.out.println("Player " + player.getName() + " is reconnected" + " " + player.isConnected() + " " + player.getMatchId());
+            return player.getMatchId();
+        }
 
         for (Match match : this.matches) {
 
@@ -279,6 +349,7 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
             return;
         }
         match.playerExit(player);
+
         this.players.remove(player);
     }
 
@@ -319,9 +390,6 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
 //            File jsonFile = new File("src/main/java/server/dictionary.json");
 //            Player[] players = objectMapper.readValue(jsonFile, Player[].class);
             List<Player> players = Arrays.asList(objectMapper.readValue(jsonFile, Player[].class));
-            for (Player player : players) {
-                System.out.println(player.getName());
-            }
             return players;
         } catch (Exception e) {
             e.printStackTrace();

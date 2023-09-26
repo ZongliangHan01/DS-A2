@@ -29,6 +29,10 @@ public class App {
 //        this.opponent = opponent;
     }
 
+    public void sendHeartBeat() throws RemoteException {
+        long currentTime = System.currentTimeMillis();
+        this.remoteGame.sendHeartBeat(playerName, currentTime);
+    }
     public int countDown() throws RemoteException {
 //        this.countDown--;
 //        return this.countDown;
@@ -59,6 +63,9 @@ public class App {
         return this.opponent;
     }
 
+    public boolean opponentCrashed() throws RemoteException {
+        return this.remoteGame.opponentCrashed( this.playerName);
+    }
 
     public void register(String host) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(host);

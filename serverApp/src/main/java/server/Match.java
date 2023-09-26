@@ -19,6 +19,7 @@ public class Match {
     boolean player1Exit;
     boolean player2Exit;
 
+    boolean crashed;
     int countDown = 30;
 
 
@@ -37,16 +38,16 @@ public class Match {
         this.id = new Random().nextInt(1000)+1;
         this.player1Finished = false;
         this.player2Finished = false;
-
+        this.player1Exit = false;
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     while (!player1Finished && !player2Finished) {
-                        System.out.println("count down: " + countDown);
+//                        System.out.println("count down: " + countDown);
                         Thread.sleep(1000); // 1 second
 
-                        if (countDown>0 && player2 != null && player1 != null) {
+                        if (countDown>0 && player2 != null && player1 != null && player1.isConnected() && player2.isConnected()) {
                             countDown--;
                         }
                     }
@@ -59,15 +60,30 @@ public class Match {
         thread.start();
     }
 
+    public void playerReconnect(Player player) {
+        if (this.player1.getName() == player.getName()) {
+            this.player1 = player;
+        }
+        else {
+            this.player2 = player;
+        }
+    }
+
+    public void setCrashed(boolean crashed) {
+        this.crashed = crashed;
+    }
+
     public void playerExit(Player player) {
         if (this.player1 == player) {
             this.player1Exit = true;
-//            if (this.player2 == null) {
-//                this.player2Finished = true;
-//            }
+            this.player2Finished = true;
+            this.player1Finished = true;
+
         }
         else {
             this.player2Exit = true;
+            this.player2Finished = true;
+            this.player1Finished = true;
         }
     }
 
@@ -93,10 +109,12 @@ public class Match {
     public void finishPlayer(String name) {
         if (this.player1.getName().equals(name)) {
             this.player1Finished = true;
+//            this.player1.setMatchId(-1);
             this.player1.cleanMessages();
         }
         else {
             this.player2Finished = true;
+//            this.player2.setMatchId(-1);
             this.player2.cleanMessages();
         }
     }
@@ -115,6 +133,8 @@ public class Match {
     public boolean isFinished() {
         if (this.player1Finished && this.player2Finished) {
             System.out.println("match finished test test test");
+            player1.setMatchId(-1);
+            player2.setMatchId(-1);
             return true;
         }
         return false;
@@ -195,6 +215,14 @@ public class Match {
 
         char winner = ' ';
 
+        if (this.crashed) {
+            this.player1Finished = true;
+            this.player2Finished = true;
+            updateScore(this.player1.getName());
+            updateScore(this.player2.getName());
+            return "Draw";
+        }
+
         if (this.player1Exit) {
             finishPlayer(name);
             updateScore(this.player2, name);
@@ -207,23 +235,23 @@ public class Match {
         }
 
         for (int i = 0; i < 3; i++) {
-            if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') {
+            if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != '\u0000') {
                 winner = board[0][0];
                 break;
             }
-            if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ') {
+            if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != '\u0000') {
                 winner = board[0][2];
                 break;
             }
 
             // Check rows
-            if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ') {
+            if (board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != '\u0000') {
                 winner = board[i][0];
                 break;
             }
 
             // Check columns
-            if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ') {
+            if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != '\u0000') {
                 winner = board[0][i];
                 break;
             }
@@ -290,7 +318,7 @@ public class Match {
     }
 
     public String getOpponent(Player player) {
-        if (this.player1 == player) {
+        if (this.player1 == player && this.player2 != null) {
             return this.player2.getName();
         }
         else {
