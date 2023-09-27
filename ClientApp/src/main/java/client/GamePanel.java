@@ -9,6 +9,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static java.lang.Math.abs;
+
 public class GamePanel extends JPanel  implements ActionListener {
 
 
@@ -21,6 +23,8 @@ public class GamePanel extends JPanel  implements ActionListener {
     JTextField rankField = new JTextField();
 
     JTextArea countDownField = new JTextArea();
+
+    JTextArea crashField = new JTextArea();
     JButton playAgainBtn = new JButton("Play Again");
 
     JButton exitBtn = new JButton("Exit");
@@ -97,7 +101,7 @@ public class GamePanel extends JPanel  implements ActionListener {
 
         countDownField.setSize(200,200);
         countDownField.setFont(new Font("MV Boli",Font.BOLD,30));
-        countDownField.setText("30");
+        countDownField.setText("20");
         countDownField.setOpaque(true);
         countDownField.setEditable(false);
         gbc.gridx = 0;
@@ -142,7 +146,9 @@ public class GamePanel extends JPanel  implements ActionListener {
                 } catch (NotBoundException ex) {
                     throw new RuntimeException(ex);
                 } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
+//                    throw new RuntimeException(ex);
+                    System.out.println("remote exception");
+
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -162,9 +168,11 @@ public class GamePanel extends JPanel  implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     client.playerExit();
+                    while (!client.matchFinished()) {}
                     System.exit(0);
                 } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
+                    System.out.println("remote exception");
+//                    throw new RuntimeException(ex);
                 }
             }
         });
@@ -181,7 +189,8 @@ public class GamePanel extends JPanel  implements ActionListener {
                 } catch (NotBoundException e) {
                     throw new RuntimeException(e);
                 } catch (RemoteException e) {
-                    throw new RuntimeException(e);
+//                    throw new RuntimeException(e);
+                    System.out.println("remote exception");
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -205,11 +214,14 @@ public class GamePanel extends JPanel  implements ActionListener {
 
                 String opponent = null;
                 try {
+                    String rank = client.getRank();
+
                     opponent = client.joinMatch();
                     while (opponent == null) {
                         opponent = client.joinMatch();
                     }
-                    textfield.setText("Match ID: " + matchId + " Opponent: " + opponent);
+                    String opponentRank = client.getOpponentRank();
+                    textfield.setText("Match ID: " + matchId + " Opponent: Rank#" + opponentRank + " " + opponent);
                     String winner = null;
                     winner = client.getWinner();
                     char[][] board;
@@ -221,12 +233,12 @@ public class GamePanel extends JPanel  implements ActionListener {
                         printBoard(board);
                         winner = client.getWinner();
                         while (client.opponentCrashed()) {
-                            textfield.setText("Opponent crashed");
+                            textfield.setText("Opponent crashed " + abs(32- client.crashTime()));
                         }
                         if (client.isMyTurn()) {
-                            textfield.setText("Match ID: " + matchId + " Opponent: " + opponent  +"\nYour turn");
+                            textfield.setText("Match ID: " + matchId + " Opponent: Rank#" + opponentRank + " " + opponent  +"\nYour turn");
                         } else {
-                            textfield.setText("Match ID: " + matchId + " Opponent: " + opponent  +"\n"+ opponent+"'s turn");
+                            textfield.setText("Match ID: " + matchId + " Opponent: Rank#" + opponentRank + " " + opponent  +"\nRank#"+ opponentRank + " "+ opponent+"'s turn");
                         }
                     }
 
@@ -238,9 +250,9 @@ public class GamePanel extends JPanel  implements ActionListener {
                     if (winner.equals("Draw")) {
                         textfield.setText("Draw Game");
                     } else if (winner.equals(client.getPlayerName())) {
-                        textfield.setText("You Win! \nWinner: " + winner);
+                        textfield.setText("You Win! \nWinner: Rank#" + client.getRank() + " " + winner);
                     } else {
-                        textfield.setText("You Lose! \nWinner: " + winner);
+                        textfield.setText("You Lose! \nWinner: Rank#" + client.getOpponentRank() + " " + winner);
                     }
 //                    textfield.setText("Winner: " + winner);
                     rankField.setText("Rank: " + client.getRank());
@@ -250,7 +262,17 @@ public class GamePanel extends JPanel  implements ActionListener {
                     client.setMatchId(-1);
 
                 } catch (RemoteException e) {
-                    throw new RuntimeException(e);
+                    System.out.println("remote exception");
+                    for (int i=0; i<=5; i++) {
+                        try {
+                            Thread.sleep(1000);
+                            textfield.setText("Server unavailable. \nClose in " + (5-i) + " seconds");
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                    System.exit(0);
+//                    throw new RuntimeException(e);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -300,7 +322,8 @@ public class GamePanel extends JPanel  implements ActionListener {
                     }
 
                 } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
+//                    throw new RuntimeException(ex);
+                    System.out.println("remote exception");
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -319,7 +342,17 @@ public class GamePanel extends JPanel  implements ActionListener {
                         client.sendHeartBeat();
                     }
                 } catch (RemoteException e) {
-                    throw new RuntimeException(e);
+//                    throw new RuntimeException(e);
+//                    System.out.println("remote exception");
+                    for (int i=0; i<=5; i++) {
+                        try {
+                            Thread.sleep(1000);
+                            textfield.setText("Server unavailable. \nClose in " + (5-i) + " seconds");
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                    System.exit(0);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -371,7 +404,8 @@ public class GamePanel extends JPanel  implements ActionListener {
 //            }
 
         } catch (RemoteException ex) {
-            throw new RuntimeException(ex);
+//            throw new RuntimeException(ex);
+            System.out.println("remote exception");
         }
 
 
@@ -402,6 +436,9 @@ public class GamePanel extends JPanel  implements ActionListener {
     }
 
     public void printBoard(char[][] board) {
+        if (board == null) {
+            return;
+        }
         for (int i=0; i<9; i++) {
             int r = i / 3;
             int c = i % 3;

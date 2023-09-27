@@ -29,6 +29,10 @@ public class App {
 //        this.opponent = opponent;
     }
 
+    public int crashTime() throws RemoteException {
+        return this.remoteGame.crashTime(this.playerName);
+    }
+
     public void sendHeartBeat() throws RemoteException {
         long currentTime = System.currentTimeMillis();
         this.remoteGame.sendHeartBeat(playerName, currentTime);
@@ -174,6 +178,10 @@ public class App {
 
     public String getScore() throws RemoteException {
         return this.remoteGame.getScore(playerName);
+    }
+
+    public String getOpponentRank() throws RemoteException {
+        return this.remoteGame.getRank(opponent);
     }
 //    public static void main(String[] args) {
 //        Scanner scanner = new Scanner(System.in);

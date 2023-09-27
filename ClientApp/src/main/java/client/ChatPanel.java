@@ -1,6 +1,7 @@
 package client;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +30,8 @@ public class ChatPanel extends JPanel {
         add(label, gbc);
 
         chatArea = new JTextArea();
+        DefaultCaret caret = (DefaultCaret) chatArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         chatArea.setPreferredSize(new Dimension(300, 700));
         chatArea.setEditable(false);
         chatArea.setWrapStyleWord(true);
@@ -36,6 +39,7 @@ public class ChatPanel extends JPanel {
         chatArea.setFont(new Font("Ink Free",Font.PLAIN,20));
 
         JScrollPane scrollPane = new JScrollPane(chatArea);
+//        JScrollPane scrollPane = new JScrollPane(chatPanel);
         scrollPane.setPreferredSize(new Dimension(300, 700));
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -77,34 +81,34 @@ public class ChatPanel extends JPanel {
                     }
 //                    synchronized (client) {
 
-                        while (true) {
+                    while (true) {
 //                        while (!client.matchFinished()) {
 //                            System.out.println("oppoent: " + client.getOpponent() + "match id: "+ client.getMatchId());
-                            sendButton.setEnabled(true);
-                            if (client.getMatchId() == -1 || client.getOpponent() == null) {
-                                sendButton.setEnabled(false);
-                                chatArea.setText("");
-                            }
-                            Thread.sleep(1000);
-                            if (client.getOpponent() != null) {
+                        sendButton.setEnabled(true);
+                        if (client.getMatchId() == -1 || client.getOpponent() == null) {
+                            sendButton.setEnabled(false);
+                            chatArea.setText("");
+                        }
+                        Thread.sleep(500);
+                        if (client.getOpponent() != null) {
 //                                System.out.println("thread is running");
 
-                                ArrayList<String> messages = client.getMessages();
-                                //                            System.out.println("Opponent: " + client.getOpponent() + " get messages");
+                            ArrayList<String> messages = client.getMessages();
+                            //                            System.out.println("Opponent: " + client.getOpponent() + " get messages");
 //                            chatArea.setText("");
-                                if (messages != null) {
-                                    for (String message : messages) {
+                            if (messages != null) {
+                                for (String message : messages) {
 //                                        System.out.println(message);
-                                        chatArea.append(message);
-                                    }
+                                    chatArea.append(message);
                                 }
-
                             }
+
                         }
-//                    }
-//                    sendButton.setEnabled(false);
+                    }
+
                 } catch (RemoteException e) {
-                    throw new RuntimeException(e);
+                    System.out.println("remote exception");
+//                    throw new RuntimeException(e);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -118,16 +122,17 @@ public class ChatPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String text = inputField.getText();
+                    String text = inputField.getText() + "\n";
                     if (text != null && !text.isEmpty()) {
 //                        chatArea.append(client.getPlayerName()+": "+text + "\n");
                         inputField.setText("");
-                        String message = client.getPlayerName()+": "+text + "\n";
+                        String message =  "Rank#" + client.getRank() + " " + client.getPlayerName()+": "+text + "\n";
                         client.sendMessages(message);
 //                        System.out.println(message);
                     }
                 } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
+                    System.out.println("remote exception");
+//                    throw new RuntimeException(ex);
                 }
 
 
@@ -176,7 +181,8 @@ public class ChatPanel extends JPanel {
 //                    }
 //                    sendButton.setEnabled(false);
                 } catch (RemoteException e) {
-                    throw new RuntimeException(e);
+                    System.out.println("remote exception");
+//                    throw new RuntimeException(e);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

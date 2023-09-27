@@ -3,6 +3,7 @@ package server;
 import java.util.ArrayList;
 import java.util.Random;
 
+
 public class Match {
     int id;
     Player player1;
@@ -20,7 +21,7 @@ public class Match {
     boolean player2Exit;
 
     boolean crashed;
-    int countDown = 30;
+    int countDown = 20;
 
 
 
@@ -29,7 +30,7 @@ public class Match {
     }
 
     public void resetCountDown() {
-        this.countDown = 30;
+        this.countDown = 20;
     }
 
     public Match(Player player1) {
@@ -76,15 +77,18 @@ public class Match {
     public void playerExit(Player player) {
         if (this.player1 == player) {
             this.player1Exit = true;
-            this.player2Finished = true;
-            this.player1Finished = true;
+//            updateScore(this.player2, this.player1.getName());
+//            this.player2Finished = true;
+//            this.player1Finished = true;
 
         }
         else {
             this.player2Exit = true;
-            this.player2Finished = true;
-            this.player1Finished = true;
+//            updateScore(this.player1, this.player2.getName());
+//            this.player2Finished = true;
+//            this.player1Finished = true;
         }
+//        while (!isFinished()) {}
     }
 
     public void addMessage(String message) {
@@ -224,13 +228,13 @@ public class Match {
         }
 
         if (this.player1Exit) {
-            finishPlayer(name);
             updateScore(this.player2, name);
+            finishPlayer(name);
             return this.player2.getName();
         }
         else if (this.player2Exit) {
-            finishPlayer(name);
             updateScore(this.player1, name);
+            finishPlayer(name);
             return this.player1.getName();
         }
 

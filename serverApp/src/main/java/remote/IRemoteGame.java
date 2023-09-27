@@ -49,4 +49,6 @@ public interface IRemoteGame extends Remote {
     public void sendHeartBeat(String name, long currentTime) throws RemoteException;
 
     public boolean opponentCrashed(String name) throws RemoteException;
+
+    public int crashTime(String name) throws RemoteException;
 }
