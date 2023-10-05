@@ -5,23 +5,23 @@ import java.util.Random;
 
 
 public class Match {
-    int id;
-    Player player1;
-    Player player2;
-    Player currentPlayer;
-    boolean ready;
-    char[][] board;
+    private int id;
+    private Player player1;
+    private Player player2;
+    private Player currentPlayer;
+    private boolean ready;
+    private char[][] board;
 
-    ArrayList<String> messages = new ArrayList<>();
-    ArrayList<String> messageBuffer = new ArrayList<>();
-    boolean player1Finished;
-    boolean player2Finished;
+    private ArrayList<String> messages = new ArrayList<>();
+//    ArrayList<String> messageBuffer = new ArrayList<>();
+    private boolean player1Finished;
+    private boolean player2Finished;
 
-    boolean player1Exit;
-    boolean player2Exit;
+    private boolean player1Exit;
+    private boolean player2Exit;
 
-    boolean crashed;
-    int countDown = 20;
+    private boolean crashed;
+    private int countDown = 20;
 
 
 

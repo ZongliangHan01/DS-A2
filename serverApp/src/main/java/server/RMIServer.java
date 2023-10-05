@@ -1,6 +1,6 @@
 package server;
 
-import src.main.java.remote.IRemoteGame;
+import remote.IRemoteGame;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -25,7 +25,7 @@ public class RMIServer {
             //IRemoteMath stub = (IRemoteMath) UnicastRemoteObject.exportObject(obj, 0);
             //
 
-            IRemoteGame remoteGame = new RemoteGame();
+            IRemoteGame remoteGame = new RemoteGame(args[0]);
 
             //Publish the remote object's stub in the registry under the name "Compute"
 //            Registry registry = LocateRegistry.getRegistry();

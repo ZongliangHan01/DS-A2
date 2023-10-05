@@ -32,14 +32,20 @@ public class ChatPanel extends JPanel {
         chatArea = new JTextArea();
         DefaultCaret caret = (DefaultCaret) chatArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        chatArea.setPreferredSize(new Dimension(300, 700));
+//        chatArea.setPreferredSize(new Dimension(300, 700));
         chatArea.setEditable(false);
         chatArea.setWrapStyleWord(true);
         chatArea.setLineWrap(true);
         chatArea.setFont(new Font("Ink Free",Font.PLAIN,20));
 
-        JScrollPane scrollPane = new JScrollPane(chatArea);
-//        JScrollPane scrollPane = new JScrollPane(chatPanel);
+        JPanel chatPanel = new JPanel(new BorderLayout());
+        chatPanel.setBackground(Color.white);
+        chatPanel.setSize(300, 700);
+        chatPanel.add(chatArea, BorderLayout.SOUTH);
+
+
+//        JScrollPane scrollPane = new JScrollPane(chatArea);
+        JScrollPane scrollPane = new JScrollPane(chatPanel);
         scrollPane.setPreferredSize(new Dimension(300, 700));
         gbc.gridx = 0;
         gbc.gridy = 1;

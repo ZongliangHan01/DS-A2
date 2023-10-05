@@ -7,7 +7,7 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import src.main.java.remote.IRemoteGame;
+import remote.IRemoteGame;
 
 public class App {
     String playerName;
@@ -16,8 +16,8 @@ public class App {
     IRemoteGame remoteGame;
 
     int countDown = 5;
-    public App(String ip) throws NotBoundException, RemoteException, InterruptedException {
-        register(ip);
+    public App(String ip, String name) throws NotBoundException, RemoteException, InterruptedException {
+        register(ip, name);
 
 //        String name = addPlayer();
 //        String matchInfo = joinMatch(name);
@@ -71,18 +71,18 @@ public class App {
         return this.remoteGame.opponentCrashed( this.playerName);
     }
 
-    public void register(String host) throws RemoteException, NotBoundException {
+    public void register(String host, String name) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(host);
 
         IRemoteGame remoteGame = (IRemoteGame) registry.lookup("TicTacToe");
         this.remoteGame = remoteGame;
-        addPlayer();
+        addPlayer(name);
     }
 
-    public void addPlayer() throws RemoteException {
+    public void addPlayer(String name) throws RemoteException {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter your name: ");
-        String name = scanner.nextLine();
+//        System.out.print("Enter your name: ");
+//        String name = scanner.nextLine();
         int playerStatus = 0;
 
 

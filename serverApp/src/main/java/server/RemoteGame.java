@@ -1,8 +1,10 @@
 package server;
 
-import src.main.java.remote.IRemoteGame;
+import remote.IRemoteGame;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
@@ -14,9 +16,12 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
     private ArrayList<Player> players;
     private ArrayList<Match> matches;
 
-    public RemoteGame() throws RemoteException {
+    private File jsonFile;
+
+    public RemoteGame(String filePath) throws RemoteException {
         this.players = new ArrayList<>();
         this.matches = new ArrayList<>();
+        this.jsonFile = new File(filePath);
     }
 
     public int crashTime(String name) throws RemoteException {
@@ -180,7 +185,7 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
                 return 1;
             }
         }
-        File jsonFile = new File("src/main/resources/Database.json");
+//        File jsonFile = new File("/Users/zonglianghan/Desktop/DS/DS-A2/serverApp/src/main/resources/Database.json");
         List<Player> users = loadDatabase(jsonFile);
         for (Player user : users) {
             if (user.getName().equals(name)) {
@@ -199,7 +204,7 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
 
     public int hasMatch(String name) throws RemoteException {
 
-        File jsonFile = new File("src/main/resources/Database.json");
+//        File jsonFile = new File("/Users/zonglianghan/Desktop/DS/DS-A2/serverApp/src/main/resources/Database.json");
         List<Player> users = loadDatabase(jsonFile);
 
         Player player = getPlayerByName(name);
@@ -274,7 +279,7 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
         Match match = getMatchById(matchId);
         String winner = match.getWinner(name);
         if (!winner.equals("No winner")) {
-            File jsonFile = new File("src/main/resources/Database.json");
+//            File jsonFile = new File("/Users/zonglianghan/Desktop/DS/DS-A2/serverApp/src/main/resources/Database.json");
             List<Player> users = loadDatabase(jsonFile);
             Player player;
             if (winner.equals(name)) {
@@ -375,7 +380,7 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
     public int countDown(int matchId, String name) throws RemoteException {
         Match match = getMatchById(matchId);
         if (match == null) {
-            return 30;
+            return 20;
         }
         return match.getCountDown(name);
     }
@@ -416,6 +421,8 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
     }
 
 
+
+
     private synchronized void writeIntoDatabase(File jsonFile, List<Player> players, Player player) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -433,6 +440,7 @@ public class RemoteGame extends UnicastRemoteObject implements IRemoteGame {
             e.printStackTrace();
         }
     }
+
 
     public static void updateRank(List<Player> players) {
         // Sort the players by score in descending order

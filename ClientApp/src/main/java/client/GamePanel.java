@@ -295,7 +295,7 @@ public class GamePanel extends JPanel  implements ActionListener {
 //                            System.out.println(client.getOpponent() + " is ready");
                             int countDown = client.countDown();
 //                            countDownField.setText(countDown);
-                            countDownField.setText(String.valueOf(countDown));
+                            countDownField.setText( String.valueOf(countDown));
 //                            System.out.println("count down: " + countDown);
                             if (countDown == 0) {
 //                                Thread.sleep(700);
