@@ -4,10 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static java.lang.Math.abs;
 
@@ -29,8 +27,8 @@ public class GamePanel extends JPanel  implements ActionListener {
 
     JButton exitBtn = new JButton("Exit");
     JButton[] buttons = new JButton[9];
-    App client;
-    public GamePanel(App client, JPanel chatPanel) throws NotBoundException, RemoteException, InterruptedException {
+    Client client;
+    public GamePanel(Client client, JPanel chatPanel) throws NotBoundException, RemoteException, InterruptedException {
 //        setSize(700,1000);
         setPreferredSize(new Dimension(800, 800));
         setLayout(new GridBagLayout());

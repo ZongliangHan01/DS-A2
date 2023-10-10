@@ -29,7 +29,7 @@ public class RMIServer {
 
             //Publish the remote object's stub in the registry under the name "Compute"
 //            Registry registry = LocateRegistry.getRegistry();
-            Registry registry = LocateRegistry.createRegistry(1099);
+            Registry registry = LocateRegistry.createRegistry(Integer.parseInt(args[1]));
             registry.bind("TicTacToe", remoteGame);
 
             System.out.println("TicTacToe Server ready");

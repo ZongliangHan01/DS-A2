@@ -9,15 +9,15 @@ import java.util.Scanner;
 
 import remote.IRemoteGame;
 
-public class App {
+public class Client {
     String playerName;
     int matchId = -1;
     String opponent;
     IRemoteGame remoteGame;
 
     int countDown = 5;
-    public App(String ip, String name) throws NotBoundException, RemoteException, InterruptedException {
-        register(ip, name);
+    public Client(String ip, String name, int port) throws NotBoundException, RemoteException, InterruptedException {
+        register(ip, name, port);
 
 //        String name = addPlayer();
 //        String matchInfo = joinMatch(name);
@@ -71,8 +71,8 @@ public class App {
         return this.remoteGame.opponentCrashed( this.playerName);
     }
 
-    public void register(String host, String name) throws RemoteException, NotBoundException {
-        Registry registry = LocateRegistry.getRegistry(host);
+    public void register(String host, String name, int port) throws RemoteException, NotBoundException {
+        Registry registry = LocateRegistry.getRegistry(host, port);
 
         IRemoteGame remoteGame = (IRemoteGame) registry.lookup("TicTacToe");
         this.remoteGame = remoteGame;

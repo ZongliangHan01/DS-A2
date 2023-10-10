@@ -13,9 +13,9 @@ public class ChatPanel extends JPanel {
     private JTextArea chatArea;
     private JTextArea inputField;
 
-    private App client;
+    private Client client;
 
-    public ChatPanel(App client) throws NotBoundException, RemoteException, InterruptedException {
+    public ChatPanel(Client client) throws NotBoundException, RemoteException, InterruptedException {
         this.client = client;
         setLayout(new GridBagLayout());
         setSize(300, 1000);
